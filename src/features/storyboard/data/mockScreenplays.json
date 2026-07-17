@@ -1,0 +1,131 @@
+{
+  "characters": {
+    "char1": "Kilo",
+    "char2": "Bruno",
+    "char3": "Wolfie",
+    "char4": "Chloe"
+  },
+  "locations": {
+    "loc1": "Văn phòng thám tử Kilo",
+    "loc2": "Rừng thông sương mù",
+    "loc3": "Phòng thí nghiệm",
+    "loc4": "Bìa rừng thanh bình"
+  },
+  "props": [
+    { "id": "prop-1", "name": "La bàn định vị của Kilo" },
+    { "id": "prop-2", "name": "Cỗ máy phát minh của Wolfie" },
+    { "id": "prop-3", "name": "Linh kiện robot phát minh bị cháy" }
+  ],
+  "scenarios": {
+    "missing": {
+      "rawScript": "Cảnh 1. {loc1} - Buổi sáng\nÂm thanh: Tiếng đồng hồ quả lắc kêu tích tắc chậm rãi, hồi hộp.\nHành động: {char2} đang loay hoay đi qua đi lại đầy hoang mang. Chiếc La bàn định vị của {char1} bị bỏ lại trên bàn làm việc.\n{char2}: (Cầm kính lúp, lo lắng, cảm xúc {emotion}) Ôi trời ơi! Đã 24 giờ rồi mà đại ca {char1} vẫn chưa trở về. La bàn tùy thân lại nằm lại đây!\n{char4}: (Dễ thương ôm gấu bông chạy vào) Chú {char2} ơi, bé {char4} tìm thấy một dấu chân sói khổng lồ ở bìa Rừng thông sương mù này!\n\nCảnh 2. {loc2} - Chiều tà\nÂm thanh: Tiếng gió thổi vi vu ghê rợn qua cành thông khô.\nHành động: {char2} và {char4} đang cẩn thận lần theo dấu chân sói. {char4} nhặt được một mảnh Linh kiện robot phát minh bị cháy sém ở bìa rừng.\n{char2}: (Nắm chặt nắm đấm) Đúng rồi! Mảnh cỗ máy phát minh này là của lão sói mưu mô {char3}. Hắn đã bắt cóc {char1} rồi!\n\nCảnh 3. {loc3} - Đêm tối\nÂm thanh: Tiếng cỗ máy phát minh khổng lồ kêu tạch tạch, sủi bọt hóa chất.\nHành động: {char1} đang bị nhốt trong lồng treo trên cao. {char3} cười đắc ý tay cầm remote điều khiển. {char2} xông vào đối đầu trực diện nhưng bị cỗ máy cản trở. {char4} thông minh ném quả bóng đồ chơi làm kẹt bánh răng Cỗ máy phát minh của {char3}.\n{char3}: (Mưu mô xảo quyệt) Ha ha! Thám tử giỏi nhất cuối cùng đã sa bẫy. Con robot phát minh này sẽ quấy phá cả thị trấn!\n{char1}: (Hét lớn từ trên lồng) Bruno, Chloe! Hãy ngắt nguồn năng lượng phía sau cỗ máy!\n\nCảnh 4. {loc4} - Bình minh\nÂm thanh: Bản nhạc nền vui nhộn ấm áp vang lên.\nHành động: {char1} được giải thoát, đứng kiễng chân bên cạnh {char2} và bé {char4}. Cả ba vui vẻ đúc kết bài học sâu sắc cùng khán giả trực tiếp.\n{char1}: (Nhìn thẳng vào ống kính) Cảm ơn tinh thần đồng đội của {char2} và sự thông minh nhanh trí của bé {char4}! Sức mạnh lớn nhất là sự đoàn kết và nhân ái.",
+      "scenes": [
+        {
+          "id": "scene-1",
+          "sceneNumber": 1,
+          "title": "Vụ mất tích bí ẩn",
+          "description": "{char2} hoang mang phát hiện La bàn định vị của {char1} bị rơi, bé {char4} báo tin có dấu chân sói khổng lồ.",
+          "prompt": "Cinematic interior, cozy detective office, pendulum clock, volumetric dusty sunbeams, warm colors, nostalgic.",
+          "tags": ["Mystery", "Clue", "Anxiety"]
+        },
+        {
+          "id": "scene-2",
+          "sceneNumber": 2,
+          "title": "Dấu vết bìa rừng",
+          "description": "{char2} và {char4} điều tra dấu chân ở {loc2} và tìm thấy Linh kiện robot phát minh bị cháy.",
+          "prompt": "Cinematic wide shot, dense misty forest, sunset golden hour, long shadows, detailed environment.",
+          "tags": ["Investigation", "Forest", "Suspense"]
+        },
+        {
+          "id": "scene-3",
+          "sceneNumber": 3,
+          "title": "Đối đầu & Giải cứu",
+          "description": "Bé {char4} làm kẹt Cỗ máy phát minh của {char3}, {char2} khống chế bắt giữ hung thủ và cứu {char1}.",
+          "prompt": "Cinematic medium-wide shot, sci-fi laboratory, neon tubes, dynamic action pose, arrest, heroic.",
+          "tags": ["Climax", "Confrontation", "Victory"]
+        },
+        {
+          "id": "scene-4",
+          "sceneNumber": 4,
+          "title": "Bài học tình bạn",
+          "description": "{char1}, {char2} và {char4} cười đùa trò chuyện trực tiếp cùng khán giả đúc kết bài học sâu sắc.",
+          "prompt": "Cinematic portrait, warm sunny dawn, detectives smiling at the camera, happy moral ending.",
+          "tags": ["Moral Lesson", "Direct Address", "Resolution"]
+        }
+      ]
+    },
+    "standard": {
+      "rawScript": "Cảnh 1. {loc1} - Ban ngày\nÂm thanh: Tiếng còi báo động khẩn cấp vang vọng từ xa.\nHành động: Thám tử lùn {char1} đang cầm chiếc La bàn định vị cùng với {char2} thu dọn đồ đạc để lên đường phá án.\n{char1}: (Nghiêm nghị, cảm xúc {emotion}) Tiếng động này chắc chắn phát ra từ Cỗ máy phát minh mới của sói {char3}. Chúng ta phải nhanh chóng đi thôi Bruno!\n{char2}: (Đấm tay vào lòng bàn tay) Rõ thưa đại ca! Tôi sẽ cho hắn biết tay!\n\nCảnh 2. {loc2} - Chiều tà\nÂm thanh: Tiếng kim loại va chạm xèo xèo từ Cỗ máy phát minh của {char3}.\nHành động: {char1} và {char2} tìm thấy cỗ máy phát minh robot đang quấy phá tàn phá cây cối. {char3} đứng trên cabin cười kiêu ngạo.\n{char3}: (Mưu mô) Ha ha! Hai thám tử đã tới nộp mạng cho phát minh vĩ đại của ta!\n\nCảnh 3. {loc3} - Ban đêm\nHành động: {char1} dùng trí thông minh để đánh lạc hướng cỗ máy, trong khi {char2} dùng sức mạnh cơ bắp khóa chặt {char3}. Cả hai thành công bắt giữ {char3} và vô hiệu hóa Cỗ máy phát minh.\n{char1}: (Nghiêm nghị) Ngươi đã thua rồi, {char3}! Trí tuệ là để giúp đỡ mọi người, không phải để phá hoại.\n\nCảnh 4. {loc4} - Bình minh\nHành động: {char1} và {char2} cười tươi nói chuyện trực tiếp với khán giả đúc kết bài học ý nghĩa về dùng trí thông minh đúng chỗ.\n{char1}: (Mỉm cười kiễng chân để cao hơn {char2}) Trí thông minh và sự đoàn kết là vũ khí tối thượng của mọi thám tử!",
+      "scenes": [
+        {
+          "id": "scene-1",
+          "sceneNumber": 1,
+          "title": "Tiếng còi báo động",
+          "description": "Thám tử {char1} cầm La bàn định vị và {char2} chuẩn bị lên đường điều tra Cỗ máy phát minh của {char3}.",
+          "prompt": "Cinematic interior, cozy detective office, warm daylight, high contrast, detailed props.",
+          "tags": ["Investigation", "Clue", "Tension"]
+        },
+        {
+          "id": "scene-2",
+          "sceneNumber": 2,
+          "title": "Hiện trường tàn phá",
+          "description": "{char1} và {char2} phát hiện Cỗ máy phát minh của {char3} đang tàn phá rừng thông.",
+          "prompt": "Cinematic wide shot, misty dark forest, colossal steampunk robot, volumetric lighting, epic.",
+          "tags": ["Confrontation", "Steampunk", "Suspense"]
+        },
+        {
+          "id": "scene-3",
+          "sceneNumber": 3,
+          "title": "Khống chế cỗ máy",
+          "description": "{char1} dùng trí tuệ lừa gạt robot, {char2} dùng sức mạnh cơ bắp bắt giữ {char3} và vô hiệu hóa Cỗ máy phát minh.",
+          "prompt": "Cinematic action medium shot, high voltage electricity sparks, neon wires, dramatic hero poses.",
+          "tags": ["Climax", "Arrest", "Victory"]
+        },
+        {
+          "id": "scene-4",
+          "sceneNumber": 4,
+          "title": "Bài học điện ảnh",
+          "description": "{char1} và {char2} cười tươi đúc kết bài học sâu sắc trực tiếp trước ống kính camera.",
+          "prompt": "Cinematic portrait, warm golden sunbeam, detectives smiling, moral resolution.",
+          "tags": ["Moral Lesson", "Direct Address", "Happy Ending"]
+        }
+      ]
+    }
+  },
+  "loophole": {
+    "triggers": {
+      "missing": ["mất tích", "bị bắt", "missing", "kidnap"],
+      "investigate": ["điều tra", "investigate", "tìm kiếm", "đối đầu", "bắt được", "phát hiện"],
+      "characters": ["kilo"]
+    },
+    "warning": {
+      "type": "premise-conflict",
+      "title": "⚠️ AI Cảnh Báo Lỗ Hổng Nhân Quả (Narrative Loophole)",
+      "description": "Sếp đang đặt ý tưởng cốt lõi là 'Kilo bị mất tích', nhưng phần sau lại mô tả 'Kilo và Bruno là hai thám tử cùng đi điều tra đối đầu'. Kilo không thể vừa bị mất tích vừa tự đi phá án được!"
+    },
+    "directions": [
+      {
+        "label": "💡 Hướng A: Bruno & Chloe đi giải cứu Kilo",
+        "desc": "Giữ nguyên việc Kilo bị mất tích. Chuyển vai trò thám tử chủ động đi điều tra cho Bruno và bé Chloe. Kilo sẽ được giải cứu ở phân cảnh cao trào.",
+        "replacements": [
+          { "pattern": "Hai nhân vật thám tử đi điều tra", "flags": "g", "replacement": "Bruno và bé Chloe đi điều tra giải cứu Kilo" },
+          { "pattern": "Kilo và Bruno đi điều tra", "flags": "g", "replacement": "Bruno và Chloe đi điều tra giải cứu Kilo đang bị giam giữ" },
+          { "pattern": "hai nhân vật thám tử dùng trí thông minh", "flags": "g", "replacement": "Bruno và bé Chloe dùng trí thông minh" },
+          { "pattern": "Kilo và Bruno nói chuyện", "flags": "g", "replacement": "Bruno và bé Chloe cùng Kilo đã được giải cứu nói chuyện" }
+        ],
+        "message": "🪄 AI Co-Pilot đã chuyển đổi kịch bản thống nhất: Bruno & Chloe làm thám tử đi giải cứu Kilo bị giam giữ bởi Wolfie!"
+      },
+      {
+        "label": "💡 Hướng B: Bé Chloe bị bắt cóc thay thế",
+        "desc": "Giữ vai trò thám tử phá án của Kilo và Bruno. Thay thế đối tượng mất tích thành bé Chloe hoặc một Báu vật quan trọng. Kilo và Bruno sẽ đi điều tra Wolfie để cứu Chloe.",
+        "replacements": [
+          { "pattern": "Kilo bị mất tích", "flags": "g", "replacement": "Bé Chloe bị mất tích bí ẩn" },
+          { "pattern": "kilo bị mất tích", "flags": "g", "replacement": "bé chloe bị mất tích bí ẩn" },
+          { "pattern": "Kilo và Bruno đi điều tra", "flags": "g", "replacement": "Kilo và Bruno là hai thám tử phối hợp đi điều tra cứu Chloe" },
+          { "pattern": "hai nhân vật thám tử", "flags": "g", "replacement": "Thám tử Kilo và Bruno" }
+        ],
+        "message": "🪄 AI Co-Pilot đã chuyển đổi kịch bản thống nhất: Kilo & Bruno đi giải cứu bé Chloe!"
+      }
+    ]
+  }
+}
