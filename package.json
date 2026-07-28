@@ -10,7 +10,7 @@
     "sync-docs": "node ../../sync-docs.js"
   },
   "dependencies": {
-    "@storymee/api-client": "file:./storymee-api-client-1.0.0.tgz",
+    "@storymeedev/api-client": "*",
     "@vidtory/ai-sdk": "^1.1.0",
     "@xyflow/react": "^12.10.2",
     "lucide-react": "^1.16.0",
