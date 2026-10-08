@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import { getHubUrl, HUB_API_KEY } from "@/lib/api";
+import { getHubUrl, getHubApiKey } from "@/lib/api";
 import { Cloud, Monitor, AlertCircle, RefreshCw } from "lucide-react";
 
 export default function ExtensionStatusButton() {
@@ -46,7 +46,7 @@ export default function ExtensionStatusButton() {
       const hubUrl = getHubUrl();
       const res = await fetch(`${hubUrl}/v1/health/microservices`, {
         headers: {
-          'Authorization': `Bearer ${HUB_API_KEY}`
+          'Authorization': `Bearer ${getHubApiKey()}`
         }
       });
       if (res.ok) {

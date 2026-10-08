@@ -32,7 +32,7 @@ import {
   fetchVidtoryModels,
   fetchJobById,
   API_BASE_URL,
-  HUB_API_KEY
+  getHubApiKey
 } from "@/lib/api";
 
 import { 
@@ -1025,7 +1025,7 @@ export function useXRayState() {
       const s3Url = uploadRes.url;
       const tagId = manualVariantTag.trim() || `manual_${Date.now()}`;
       const syncHeaders: any = { 'Content-Type': 'application/json' };
-      if (HUB_API_KEY) syncHeaders['Authorization'] = `Bearer ${HUB_API_KEY}`;
+      { const hubKey = getHubApiKey(); if (hubKey) syncHeaders['Authorization'] = `Bearer ${hubKey}`; }
 
       const syncRes = await fetch(`${API_BASE_URL}/internal/v1/asset/world/orchestrator/sync-variant`, {
         method: 'POST',
@@ -1110,7 +1110,7 @@ export function useXRayState() {
       const crops = await Promise.all(cropPromises);
 
       const syncHeaders: any = { 'Content-Type': 'application/json' };
-      if (HUB_API_KEY) syncHeaders['Authorization'] = `Bearer ${HUB_API_KEY}`;
+      { const hubKey = getHubApiKey(); if (hubKey) syncHeaders['Authorization'] = `Bearer ${hubKey}`; }
 
       const uploadAndSyncPromises = crops.map(async ({ r, c, blob }) => {
         const fileToUpload = new File([blob], `crop_${r}_${c}_${Date.now()}.jpg`, { type: "image/jpeg" });
@@ -1341,7 +1341,7 @@ export function useXRayState() {
         `❌ [Lỗi] Quá trình quét X-Ray thất bại: ${err.message}`,
         `💡 [Hướng dẫn kiểm tra]:`,
         `  1. Với luồng Extension: Hãy cài đặt & bật GFlow Extension, ghim extension và Đăng nhập tài khoản Google Labs.`,
-        `  2. Với luồng Direct API: Hãy đảm bảo Backend Core API (Cổng 4500) hoặc Hub Gateway (Cổng 5100) đang chạy.`,
+        `  2. Với luồng Direct API: Hãy đảm bảo Hub Gateway (Cổng 5100) hoặc Backend Core API đang chạy.`,
         `  3. Kiểm tra mạng internet, cấu hình VPN hoặc xem chi tiết logs tại tab Network DevTools.`
       ]);
     } finally {

@@ -63,7 +63,7 @@ export default function GlobalSettingsButton() {
       setCustomApiUrl("");
     } else {
       setHubUrl(`http://${localIp}:5100`);
-      setCustomApiUrl(`http://${localIp}:4500`);
+      setCustomApiUrl(`http://${localIp}:5100`);
     }
   }, [hubConnectionMode, localIp]);
 
@@ -94,7 +94,8 @@ export default function GlobalSettingsButton() {
           setHubUrl(settings.hubUrl || "");
         }
 
-        setHubApiKey(settings.hubApiKey || "");
+        const localStoredApiKey = typeof window !== "undefined" ? localStorage.getItem("STORYMEE_HUB_API_KEY") : "";
+        setHubApiKey(settings.hubApiKey || localStoredApiKey || "");
         setSdkUrl(settings.sdkUrl || "");
         setSdkApiKey(settings.sdkApiKey || "");
         setGeminiApiKey(settings.geminiApiKey || "");
@@ -188,7 +189,7 @@ export default function GlobalSettingsButton() {
         localStorage.setItem("STORYMEE_LOCAL_IP", localIp);
         localStorage.setItem("STORYMEE_HUB_API_KEY", hubApiKey);
         
-        const finalCustomUrl = hubConnectionMode === 'production' ? '' : `http://${localIp}:4500`;
+        const finalCustomUrl = hubConnectionMode === 'production' ? '' : `http://${localIp}:5100`;
         if (finalCustomUrl) {
           localStorage.setItem('STORYMEE_CUSTOM_API_URL', finalCustomUrl);
         } else {

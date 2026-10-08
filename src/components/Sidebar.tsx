@@ -66,7 +66,7 @@ export default function Sidebar() {
         },
         {
           name: "Jobs Center",
-          href: "/internal/v1/jobs",
+          href: "/jobs",
           icon: Activity,
         },
         {

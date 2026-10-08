@@ -160,7 +160,7 @@ export default function Home() {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <Link href="/internal/v1/jobs" className="bg-neutral-900 border border-white/5 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-355 hover:bg-neutral-800 transition">Jobs Manager</Link>
+          <Link href="/jobs" className="bg-neutral-900 border border-white/5 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-355 hover:bg-neutral-800 transition">Jobs Manager</Link>
           <Link href="/tools/xray" className="bg-neutral-900 border border-white/5 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-355 hover:bg-neutral-800 transition">X-Ray Decoder</Link>
           <Link href={`/tools/storyboard?projectId=${selectedProjectId}`} className="bg-purple-950/40 border border-purple-500/20 text-purple-400 hover:text-white px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition">Storyboard</Link>
           <button 
@@ -265,7 +265,19 @@ export default function Home() {
           selectedEpisode={selectedEpisode}
           storyboardAssets={storyboardAssets}
           isLoadingStoryboard={isLoadingStoryboard}
-          getStoryboardFlowUrl={() => typeof window !== "undefined" ? window.location.origin.replace(":3000", ":5173") : "http://localhost:5173"}
+          getStoryboardFlowUrl={() => {
+            if (process.env.NEXT_PUBLIC_FLOW_ARCHITECT_URL) {
+              return process.env.NEXT_PUBLIC_FLOW_ARCHITECT_URL;
+            }
+            if (typeof window !== "undefined") {
+              const { hostname } = window.location;
+              if (hostname === "localhost" || hostname === "127.0.0.1") {
+                return "http://localhost:5173";
+              }
+              return "https://storyboard-workflow.vercel.app";
+            }
+            return "http://localhost:5173";
+          }}
         />
       </div>
 

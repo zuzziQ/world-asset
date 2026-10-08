@@ -1,4 +1,4 @@
-import { API_BASE_URL, HUB_API_KEY, getHubWsUrl, getApiBaseUrl } from "@/lib/api";
+import { API_BASE_URL, getHubApiKey, getHubWsUrl, getApiBaseUrl } from "@/lib/api";
 
 const cleanUrlSlashes = (url: string): string => {
   if (!url || typeof url !== 'string') return url;
@@ -167,7 +167,7 @@ export const monitorJob = (jobId: string, options?: { forceHttp?: boolean, signa
           const res = await fetch(`${getApiBaseUrl()}/media/status/${jobId}`, {
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${HUB_API_KEY}`
+              'Authorization': `Bearer ${getHubApiKey()}`
             },
             signal: options?.signal // Abort the fetch request if cancelled
           });

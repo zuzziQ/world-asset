@@ -188,28 +188,28 @@ export const CalibrationSection: React.FC<CalibrationSectionProps> = ({
                 </label>
                 <div className="flex gap-1.5">
                   <select
-                    value={["https://dev-hub.storymee.com/api", "http://localhost:4500/api"].includes(apiEndpoint) ? apiEndpoint : "custom"}
+                    value={["https://dev-hub.storymee.com/api", "http://localhost:5100/api"].includes(apiEndpoint) ? apiEndpoint : "custom"}
                     onChange={(e) => {
                       if (e.target.value !== "custom") {
                         handleUpdateApiEndpoint(e.target.value);
                       } else {
-                        handleUpdateApiEndpoint("http://localhost:4500/api"); // Default template
+                        handleUpdateApiEndpoint("http://localhost:5100/api"); // Default template
                       }
                     }}
                     className="bg-slate-950 border border-slate-900 rounded-lg px-2 py-1.5 text-slate-300 outline-none text-[10px] flex-1 font-mono font-bold"
                   >
                     <option value="https://dev-hub.storymee.com/api">Production VPS Gateway</option>
-                    <option value="http://localhost:4500/api">Local Gateway (Port 4500)</option>
+                    <option value="http://localhost:5100/api">Local Gateway (Port 5100)</option>
                     <option value="custom">Custom Endpoint...</option>
                   </select>
                   
                   {/* Text input for custom endpoint */}
-                  {!["https://dev-hub.storymee.com/api", "http://localhost:4500/api"].includes(apiEndpoint) && (
+                  {!["https://dev-hub.storymee.com/api", "http://localhost:5100/api"].includes(apiEndpoint) && (
                     <input
                       type="text"
                       value={apiEndpoint}
                       onChange={(e) => handleUpdateApiEndpoint(e.target.value)}
-                      placeholder="http://127.0.0.1:4500/api"
+                      placeholder="http://127.0.0.1:5100/api"
                       className="bg-slate-950 border border-slate-900 rounded-lg px-2.5 py-1 text-slate-300 outline-none text-[10px] font-mono flex-1 border-purple-900/50"
                     />
                   )}

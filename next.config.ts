@@ -2,7 +2,9 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
-  turbopack: {},
+  turbopack: {
+    root: process.cwd(),
+  },
   webpack: (config, { dev }) => {
     if (dev) {
       config.watchOptions = {

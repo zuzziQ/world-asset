@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { getApiBaseUrl, HUB_API_KEY } from '@/lib/api';
+import { getApiBaseUrl, getHubApiKey } from '@/lib/api';
 import { globalJobSubscriber } from '@/lib/globalJobSubscriber';
 
 export interface JobStatusState {
@@ -71,7 +71,7 @@ export function useJobStatus(jobId: string | null, onCompleted?: (outputUrls: st
           const res = await fetch(`${getApiBaseUrl()}/media/status/${jobId}`, {
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${HUB_API_KEY}`
+              'Authorization': `Bearer ${getHubApiKey()}`
             }
           });
           if (!res.ok) return;

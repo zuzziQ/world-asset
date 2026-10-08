@@ -55,15 +55,47 @@ export const getHubWsUrl = (path: string = '') => {
   return `${wsProtocol}//${cleanUrl}${path}`;
 };
 
+export const getHubApiKey = (): string => {
+  if (typeof window !== 'undefined') {
+    const storedKey = localStorage.getItem('STORYMEE_HUB_API_KEY');
+    if (storedKey) return storedKey;
+    try {
+      const settings = localStorage.getItem('STORYMEE_GLOBAL_SETTINGS');
+      if (settings) {
+        const parsed = JSON.parse(settings);
+        if (parsed.hubApiKey) return parsed.hubApiKey;
+      }
+    } catch (e) {}
+  }
+  // Server-side only: never read a NEXT_PUBLIC_* key (it is inlined into the
+  // browser bundle). In the browser the operator pastes a scoped key in Settings.
+  return typeof window === 'undefined' ? process.env.HUB_API_KEY || '' : '';
+};
+
 export const API_BASE_URL = getDefaultApiUrl(); // Backwards compatibility for other files importing it static
-export const HUB_API_KEY = ''; // Managed server-side via Middleware with client-side fallback
+/** @deprecated read the key per request with getHubApiKey(); kept for imports. */
+export const HUB_API_KEY = '';
 
 const apiClient = new CoreApiClient({
   baseURL: getApiBaseUrl(),
   headers: {
-    'Authorization': `Bearer ${HUB_API_KEY}`
+    'Authorization': `Bearer ${getHubApiKey()}`
   }
 });
+
+// Setup dynamic auth interceptor on CoreApiClient internal axios client
+try {
+  (apiClient as any).client?.interceptors?.request?.use((config: any) => {
+    const token = getHubApiKey();
+    if (token) {
+      const reqHeaders = config.headers;
+      if (reqHeaders && !reqHeaders['Authorization'] && !reqHeaders['authorization'] && !reqHeaders.get?.('Authorization')) {
+        reqHeaders['Authorization'] = `Bearer ${token}`;
+      }
+    }
+    return config;
+  });
+} catch (e) {}
 
 /**
  * Standardized HTTP client helper for OMNI Core API.
@@ -72,13 +104,15 @@ const apiClient = new CoreApiClient({
  */
 async function request<T>(path: string, options: RequestInit & { timeoutMs?: number } = {}): Promise<T> {
   const { timeoutMs = 8000, method = 'GET', body, headers } = options;
+  const apiKey = getHubApiKey();
+  const requestHeaders = (headers as Record<string, string>) || {};
   
   const config = {
     timeout: timeoutMs,
     baseURL: getApiBaseUrl(), // allow dynamic updates from localStorage
     headers: {
-      'Authorization': `Bearer ${HUB_API_KEY}`,
-      ...(headers as Record<string, string> || {})
+      ...(apiKey ? { 'Authorization': `Bearer ${apiKey}` } : {}),
+      ...requestHeaders
     }
   };
 
@@ -195,6 +229,14 @@ export async function generateCharacterVariant(characterId: string, promptModifi
   });
 }
 
+export async function generateCharacterVideo(characterId: string, promptModifier: string) {
+  return request<any>(`/internal/v1/asset/world/characters/${characterId}/generate-video`, {
+    method: 'POST',
+    body: JSON.stringify({ promptModifier }),
+    timeoutMs: 40000
+  });
+}
+
 export async function uploadImage(file: File) {
   const formData = new FormData();
   formData.append('file', file);
@@ -226,7 +268,7 @@ export async function fetchVidtoryModels() {
 export async function generatePrompt(basePrompt: string, emotion: string, angle: string) {
   console.log("[API.ts] Routing LLM (generatePrompt) through Hub Gateway...");
   const promptStr = `Rewrite this scene into a concise text-to-image prompt. Emotion: ${emotion}. Angle: ${angle}. Scene: ${basePrompt}`;
-  const res = await request<any>('/internal/v1/media/prompt', {
+  const res = await request<any>('/v1/media/prompt', {
     method: 'POST',
     body: JSON.stringify({
       prompt: promptStr,
@@ -238,7 +280,7 @@ export async function generatePrompt(basePrompt: string, emotion: string, angle:
 
 export async function generateText(prompt: string, modelId?: string) {
   console.log("[API.ts] Routing Text generation through Hub Gateway...");
-  return request<any>('/internal/v1/media/prompt', {
+  return request<any>('/v1/media/prompt', {
     method: 'POST',
     body: JSON.stringify({
       prompt,
@@ -248,7 +290,7 @@ export async function generateText(prompt: string, modelId?: string) {
 }
 
 export async function resolvePrompt(projectId: string, rawPrompt: string, characterNames?: string[]) {
-  return request<any>('/internal/v1/asset/world/resolve-prompt', {
+  return request<any>(`/internal/v1/asset/world/resolve-prompt`, {
     method: 'POST',
     body: JSON.stringify({ projectId, rawPrompt, characterNames })
   });
@@ -272,7 +314,7 @@ export async function generateAssetJob(characterId: string, prompt: string, addi
   };
 
   try {
-    const res = await request<any>('/internal/v1/media/generate/image', {
+    const res = await request<any>('/v1/media/image', {
       method: 'POST',
       signal,
       body: JSON.stringify({
@@ -346,6 +388,33 @@ export async function generateXRayPrompt(brief: string, wardrobe: string, psycho
 export async function deleteCharacter(id: string) {
   return request<any>(`/internal/v1/asset/world/characters/${id}`, {
     method: 'DELETE'
+  });
+}
+
+export async function fetchAssets(filter: { projectId?: string; episodeId?: string; sceneId?: string; assetType?: string } = {}) {
+  const params = new URLSearchParams();
+  if (filter.projectId) params.append('projectId', filter.projectId);
+  if (filter.episodeId) params.append('episodeId', filter.episodeId);
+  if (filter.sceneId) params.append('sceneId', filter.sceneId);
+  if (filter.assetType) params.append('assetType', filter.assetType);
+  const query = params.toString() ? `?${params.toString()}` : '';
+  return request<any>(`/internal/v1/asset/world/assets${query}`, { cache: 'no-store' });
+}
+
+export async function createAsset(data: {
+  ipId?: string;
+  assetType?: string;
+  driveUrl: string;
+  tags?: string[];
+  variantStatus?: string;
+  projectId?: string;
+  universeId?: string;
+  episodeId?: string;
+  sceneId?: string;
+}) {
+  return request<any>('/internal/v1/asset/world/assets', {
+    method: 'POST',
+    body: JSON.stringify(data)
   });
 }
 
@@ -516,7 +585,7 @@ export async function extractCharactersWithAI(premise: string, existingCharacter
   let result: string[] = [];
   try {
     console.log("[API.ts] Routing LLM (extractCharactersWithAI) through Hub Gateway natively...");
-    const res = await request<any>('/internal/v1/media/prompt', {
+    const res = await request<any>('/v1/media/prompt', {
       method: 'POST',
       body: JSON.stringify({
         prompt: prompt,
