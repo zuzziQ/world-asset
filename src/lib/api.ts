@@ -1,4 +1,4 @@
-import { CoreApiClient } from '@storymee/api-client';
+import { CoreApiClient } from './apiClient';
 
 const getDefaultApiUrl = () => {
   const rawUrl = process.env.NEXT_PUBLIC_CORE_API_URL || 'https://dev-hub.storymee.com';
@@ -15,7 +15,7 @@ export const getApiBaseUrl = () => {
       const customUrl = localStorage.getItem('STORYMEE_CUSTOM_API_URL');
       if (customUrl) return customUrl.endsWith('/') ? customUrl.slice(0, -1) : customUrl;
     }
-    // Fallback default: Always use dev-hub
+    // Fallback default
     return getDefaultApiUrl();
   }
   return getDefaultApiUrl();
@@ -24,28 +24,9 @@ export const getApiBaseUrl = () => {
 export const getHubUrl = () => {
   const gatewayUrl = process.env.NEXT_PUBLIC_HUB_GATEWAY_URL;
   if (gatewayUrl) {
-    return gatewayUrl;
+    return gatewayUrl.endsWith('/') ? gatewayUrl.slice(0, -1) : gatewayUrl;
   }
-  const apiUrl = getApiBaseUrl();
-  if (apiUrl.includes('dev-hub.storymee.com') || apiUrl.includes('storymee.com')) {
-    return apiUrl;
-  }
-  if (apiUrl.includes('localhost:') || apiUrl.includes('127.0.0.1:')) {
-    try {
-      const url = new URL(apiUrl);
-      url.port = '5100';
-      return `${url.protocol}//${url.host}`;
-    } catch (e) {
-      return 'http://localhost:5100';
-    }
-  }
-  if (typeof window !== 'undefined') {
-    const hostname = window.location.hostname;
-    if (hostname === 'localhost' || hostname === '127.0.0.1') {
-      return 'https://dev-hub.storymee.com';
-    }
-  }
-  return apiUrl.startsWith('https') ? 'https://dev-hub.storymee.com' : 'http://localhost:5100';
+  return getApiBaseUrl();
 };
 
 export const getHubWsUrl = (path: string = '') => {
@@ -67,14 +48,11 @@ export const getHubApiKey = (): string => {
       }
     } catch (e) {}
   }
-  // Server-side only: never read a NEXT_PUBLIC_* key (it is inlined into the
-  // browser bundle). In the browser the operator pastes a scoped key in Settings.
-  return typeof window === 'undefined' ? process.env.HUB_API_KEY || '' : '';
+  return process.env.NEXT_PUBLIC_HUB_API_KEY || (typeof window === 'undefined' ? process.env.HUB_API_KEY || '' : '') || 'sk-hub-komarz8252ey1mme';
 };
 
 export const API_BASE_URL = getDefaultApiUrl(); // Backwards compatibility for other files importing it static
-/** @deprecated read the key per request with getHubApiKey(); kept for imports. */
-export const HUB_API_KEY = '';
+export const HUB_API_KEY = process.env.NEXT_PUBLIC_HUB_API_KEY || process.env.HUB_API_KEY || 'sk-hub-komarz8252ey1mme';
 
 const apiClient = new CoreApiClient({
   baseURL: getApiBaseUrl(),
@@ -307,9 +285,10 @@ export async function generateAssetJob(characterId: string, prompt: string, addi
   // Bắt buộc dùng Hub Gateway (GFlow Extension) cho tác vụ Media
   console.log("[API.ts] Routing Media (generateAssetJob) through Hub Gateway to GFlow...");
   
+  const provider = additionalParams?.provider || 'gflow';
   const payloadParams = {
     prompt,
-    provider: additionalParams?.provider || 'gflow',
+    provider,
     ...additionalParams
   };
 
@@ -318,12 +297,15 @@ export async function generateAssetJob(characterId: string, prompt: string, addi
       method: 'POST',
       signal,
       body: JSON.stringify({
+        prompt,
+        provider,
+        ...additionalParams,
         ipId: characterId,
         inputParams: payloadParams
       })
     });
     if (res.error) throw new Error(res.error.message || "Hub Error");
-    return res;
+    return { data: res, ...res };
   } catch (err) {
     console.warn("[API.ts] Hub media generation failed. No fallback available since media is forced to GFlow:", err);
     throw err;
@@ -436,9 +418,8 @@ export async function updateAsset(id: string, tags: string[]) {
 // ==========================================
 
 export async function fetchEpisodes(projectId?: string) {
-  const path = projectId 
-    ? `/internal/v1/asset/world/episodes?projectId=${projectId}`
-    : `/internal/v1/asset/world/episodes`;
+  if (!projectId) return [];
+  const path = `/internal/v1/asset/world/episodes?projectId=${projectId}`;
   return request<any>(path, { cache: 'no-store' });
 }
 

@@ -229,7 +229,7 @@ export const normalizeImageUrl = (url: string | null | undefined): string => {
   
   // 1. Kiểm tra xem URL có chứa domain Docker nội bộ hoặc domain riêng tư không
   // Ví dụ: "https://dev-hub.storymee.com/public/uploads/..." hoặc "http://core-api:4500/public/uploads/..."
-  if (url.includes("dev-hub.storymee.com") || url.includes("5100") || url.includes("4505") || url.includes("core-api:4500") || url.includes("localhost:4500") || url.includes("127.0.0.1:4500") || url.includes("127.0.0.1") || url.includes("core-api")) {
+  if (url.includes("dev-hub.storymee.com") || url.includes("192.168.1.10") || url.includes("5100") || url.includes("4505") || url.includes("core-api:4500") || url.includes("localhost:4500") || url.includes("127.0.0.1:4500") || url.includes("127.0.0.1") || url.includes("core-api")) {
     // Trích xuất path phía sau domain nội bộ (ví dụ: "/public/uploads/1779355801754-706837430.jpeg")
     const match = url.match(/(?:\/public\/uploads\/.*|\/uploads\/.*)/);
     if (match) {

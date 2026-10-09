@@ -7,7 +7,9 @@ export function useGFlowExtension() {
     if (typeof window === "undefined") return null;
 
     try {
-      const extId = document.documentElement.getAttribute("data-storymee-extension-id");
+      const extId =
+        document.documentElement.getAttribute("data-storymee-extension-id") ||
+        (typeof localStorage !== "undefined" ? localStorage.getItem("STORYMEE_EXT_ID") : null);
       const win = window as any;
       if (extId && win.chrome && win.chrome.runtime) {
         return new Promise<string | null>((resolve) => {

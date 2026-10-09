@@ -4,12 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { Loader2, ShieldAlert, CheckCircle, Activity, Box, Database, Zap, ArrowRight, X, Network } from 'lucide-react';
 import Link from 'next/link';
 import FallbackFlowGraph from './FallbackFlowGraph';
-
-const getApiBaseUrl = () => {
-  const rawUrl = process.env.NEXT_PUBLIC_CORE_API_URL || 'https://dev-hub.storymee.com';
-  return rawUrl.endsWith('/') ? rawUrl.slice(0, -1) : rawUrl;
-};
-const API_BASE_URL = getApiBaseUrl();
+import { getApiBaseUrl, getHubApiKey } from '@/lib/api';
 
 export default function OrchestratorDashboard() {
   const [metrics, setMetrics] = useState<any>(null);
@@ -19,16 +14,24 @@ export default function OrchestratorDashboard() {
   useEffect(() => {
     async function fetchData() {
       try {
+        const baseUrl = getApiBaseUrl();
+        const headers: Record<string, string> = {};
+        const apiKey = getHubApiKey();
+        if (apiKey) headers['Authorization'] = `Bearer ${apiKey}`;
+
         const [metricsRes, tracesRes] = await Promise.all([
-          fetch(`${API_BASE_URL}/internal/v1/asset/world/orchestrator/metrics`),
-          fetch(`${API_BASE_URL}/internal/v1/asset/world/orchestrator/traces`)
+          fetch(`${baseUrl}/internal/v1/asset/world/orchestrator/metrics`, { headers }).catch(() => null),
+          fetch(`${baseUrl}/internal/v1/asset/world/orchestrator/traces`, { headers }).catch(() => null)
         ]);
-        const metricsData = await metricsRes.json();
-        const tracesData = await tracesRes.json();
-        setMetrics(metricsData);
-        setTraces(tracesData);
+        const metricsData = metricsRes && metricsRes.ok ? await metricsRes.json().catch(() => null) : null;
+        const tracesData = tracesRes && tracesRes.ok ? await tracesRes.json().catch(() => []) : [];
+        
+        setMetrics(metricsData && typeof metricsData === 'object' && !metricsData.error ? metricsData : { total: 0, duplicates: 0, pending: 0, approved: 0, duplicationRate: "0.00%" });
+        setTraces(Array.isArray(tracesData) ? tracesData : (Array.isArray(tracesData?.data) ? tracesData.data : []));
       } catch (error) {
         console.error('Failed to load orchestrator data', error);
+        setMetrics({ total: 0, duplicates: 0, pending: 0, approved: 0, duplicationRate: "0.00%" });
+        setTraces([]);
       } finally {
         setLoading(false);
       }

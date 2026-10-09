@@ -39,11 +39,6 @@ export default function Sidebar() {
           href: "/",
           icon: Film,
         },
-        {
-          name: "Storyboard Studio",
-          href: "/tools/storyboard",
-          icon: Clapperboard,
-        },
       ],
     },
     {

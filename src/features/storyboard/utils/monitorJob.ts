@@ -88,9 +88,9 @@ export const monitorJob = (jobId: string, options?: { forceHttp?: boolean, signa
       return;
     }
 
-    // Validate UUID format before attempting connections
-    const uuidRegex = /^[0-9a-f]{8}-?[0-9a-f]{4}-?[0-9a-f]{4}-?[0-9a-f]{4}-?[0-9a-f]{12}$/i;
-    if (!jobId || !uuidRegex.test(jobId)) {
+    // Validate job ID format before attempting connections (UUID, gflow-*, dreamina-*, etc.)
+    const validJobIdRegex = /^[a-zA-Z0-9_-]+$/;
+    if (!jobId || !validJobIdRegex.test(jobId)) {
         reject(new Error(`Invalid job ID format: ${jobId}`));
         return;
     }
@@ -164,17 +164,46 @@ export const monitorJob = (jobId: string, options?: { forceHttp?: boolean, signa
         if (options?.signal?.aborted) return;
 
         try {
-          const res = await fetch(`${getApiBaseUrl()}/media/status/${jobId}`, {
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${getHubApiKey()}`
-            },
-            signal: options?.signal // Abort the fetch request if cancelled
-          });
-          if (!res.ok) throw new Error(`HTTP status ${res.status}`);
-          
-          const data = await res.json();
-          const job = data.data;
+          let job: any = null;
+
+          // 1. Try Hub Task endpoint first (stores async state for GFlow/Dreamina/Picsart)
+          try {
+            const taskRes = await fetch(`${getApiBaseUrl()}/v1/media/tasks/${jobId}`, {
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${getHubApiKey()}`
+              },
+              signal: options?.signal
+            });
+            if (taskRes.ok) {
+              const taskData = await taskRes.json();
+              if (taskData?.task) {
+                const meta = taskData.task.metadata || {};
+                const taskState = (meta.state || taskData.task.state || '').toLowerCase();
+                const taskUrls = taskData.task.result?.urls || taskData.task.result?.output_urls || [];
+                job = {
+                  status: (taskState === 'completed' || taskState === 'succeeded' || taskState === 'done') ? 'completed' : taskState === 'failed' ? 'failed' : 'processing',
+                  outputUrls: taskUrls,
+                  errorMessage: taskData.task.error
+                };
+              }
+            }
+          } catch (e) {}
+
+          // 2. Fallback to /internal/v1/jobs if not resolved via Hub Task endpoint
+          if (!job) {
+            const res = await fetch(`${getApiBaseUrl()}/internal/v1/jobs/${jobId}`, {
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${getHubApiKey()}`
+              },
+              signal: options?.signal // Abort the fetch request if cancelled
+            });
+            if (res.ok) {
+              const data = await res.json();
+              job = data.data;
+            }
+          }
 
           if (job) {
             const status = job.status;

@@ -3,12 +3,7 @@
 import { useEffect, useState } from "react";
 import { ArrowLeft, Plus, Save, Trash2, Network, Tag as TagIcon } from "lucide-react";
 import Link from "next/link";
-
-const getApiBaseUrl = () => {
-  const rawUrl = process.env.NEXT_PUBLIC_CORE_API_URL || 'https://dev-hub.storymee.com';
-  return rawUrl.endsWith('/') ? rawUrl.slice(0, -1) : rawUrl;
-};
-const API_BASE_URL = getApiBaseUrl();
+import { getApiBaseUrl, getHubApiKey } from "@/lib/api";
 
 interface SemanticRule {
   id: string;
@@ -26,13 +21,22 @@ export default function SemanticDictionaryPage() {
   const [newCategory, setNewCategory] = useState("emotion");
   const [newFallbacks, setNewFallbacks] = useState("");
 
+  const getAuthHeaders = (extra: Record<string, string> = {}) => {
+    const headers: Record<string, string> = { ...extra };
+    const apiKey = getHubApiKey();
+    if (apiKey) headers['Authorization'] = `Bearer ${apiKey}`;
+    return headers;
+  };
+
   useEffect(() => {
     fetchRules();
   }, []);
 
   const fetchRules = async () => {
     try {
-      const res = await fetch(`${API_BASE_URL}/internal/v1/asset/world/orchestrator/semantics`);
+      const res = await fetch(`${getApiBaseUrl()}/internal/v1/asset/world/orchestrator/semantics`, {
+        headers: getAuthHeaders()
+      });
       const data = await res.json();
       setRules(data);
     } catch (err) {
@@ -48,9 +52,9 @@ export default function SemanticDictionaryPage() {
     if (!newTagId || fallbacksArray.length === 0) return alert("Vui lòng điền đủ Tag ID và danh sách Fallback!");
 
     try {
-      const res = await fetch(`${API_BASE_URL}/internal/v1/asset/world/orchestrator/semantics`, {
+      const res = await fetch(`${getApiBaseUrl()}/internal/v1/asset/world/orchestrator/semantics`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
         body: JSON.stringify({
           tagId: newTagId,
           category: newCategory,
@@ -70,8 +74,9 @@ export default function SemanticDictionaryPage() {
   const handleDelete = async (id: string) => {
     if (!confirm("Xóa rule này?")) return;
     try {
-      const res = await fetch(`${API_BASE_URL}/internal/v1/asset/world/orchestrator/semantics/${id}`, {
-        method: 'DELETE'
+      const res = await fetch(`${getApiBaseUrl()}/internal/v1/asset/world/orchestrator/semantics/${id}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders()
       });
       if (res.ok) fetchRules();
     } catch (err) {

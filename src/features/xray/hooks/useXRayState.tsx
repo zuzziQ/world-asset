@@ -798,7 +798,10 @@ export function useXRayState() {
 
   const fetchVariantGallery = async (characterId: string) => {
     try {
-      const res = await fetch(`${API_BASE_URL}/internal/v1/asset/world/characters/${characterId}/variants`);
+      const headers: Record<string, string> = {};
+      const hubKey = getHubApiKey();
+      if (hubKey) headers['Authorization'] = `Bearer ${hubKey}`;
+      const res = await fetch(`${API_BASE_URL}/internal/v1/asset/world/characters/${characterId}/variants`, { headers });
       if (res.ok) {
         const list = await res.json();
         setVariantImages(list.map((item: any) => ({

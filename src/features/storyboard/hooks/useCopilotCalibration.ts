@@ -50,7 +50,10 @@ export function useCopilotCalibration({
   getGFlowToken
 }: CopilotCalibrationProps) {
   // Dynamic API Endpoint & Provider States (Client-side localized)
-  const [apiEndpoint, setApiEndpoint] = useState<string>("https://dev-hub.storymee.com/api");
+  const [apiEndpoint, setApiEndpoint] = useState<string>(() => {
+    const raw = process.env.NEXT_PUBLIC_CORE_API_URL || "https://dev-hub.storymee.com";
+    return raw.endsWith('/') ? `${raw.slice(0, -1)}/api` : `${raw}/api`;
+  });
   const [aiProvider, setAiProvider] = useState<string>("gflow");
 
   // Interactive Co-Pilot States
@@ -109,7 +112,8 @@ export function useCopilotCalibration({
   // Local storage initialization
   React.useEffect(() => {
     if (typeof window !== "undefined") {
-      const savedEndpoint = localStorage.getItem("STORYMEE_CUSTOM_API_URL") || "https://dev-hub.storymee.com/api";
+      const defaultUrl = process.env.NEXT_PUBLIC_CORE_API_URL ? `${process.env.NEXT_PUBLIC_CORE_API_URL.replace(/\/$/, '')}/api` : "https://dev-hub.storymee.com/api";
+      const savedEndpoint = localStorage.getItem("STORYMEE_CUSTOM_API_URL") || defaultUrl;
       const savedProvider = localStorage.getItem("STORYMEE_AI_PROVIDER") || "gflow";
       setApiEndpoint(savedEndpoint);
       setAiProvider(savedProvider);

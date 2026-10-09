@@ -10,8 +10,7 @@
     "sync-docs": "node ../../sync-docs.js"
   },
   "dependencies": {
-    "@storymeedev/api-client": "*",
-    "@vidtory/ai-sdk": "^1.1.0",
+    "axios": "^1.7.2",
     "@xyflow/react": "^12.10.2",
     "lucide-react": "^1.16.0",
     "next": "16.2.6",

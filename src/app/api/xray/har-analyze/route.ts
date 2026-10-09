@@ -6,7 +6,7 @@ const getApiBaseUrl = () => {
   return rawUrl.endsWith('/') ? rawUrl.slice(0, -1) : rawUrl;
 };
 const API_BASE_URL = getApiBaseUrl();
-const HUB_API_KEY = process.env.HUB_API_KEY || '';
+const HUB_API_KEY = process.env.HUB_API_KEY || process.env.NEXT_PUBLIC_HUB_API_KEY || '';
 
 export async function POST(req: Request) {
   const logs: string[] = [];

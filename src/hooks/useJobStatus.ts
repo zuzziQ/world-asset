@@ -68,7 +68,7 @@ export function useJobStatus(jobId: string | null, onCompleted?: (outputUrls: st
       
       const poll = async () => {
         try {
-          const res = await fetch(`${getApiBaseUrl()}/media/status/${jobId}`, {
+          const res = await fetch(`${getApiBaseUrl()}/internal/v1/jobs/${jobId}`, {
             headers: {
               'Content-Type': 'application/json',
               'Authorization': `Bearer ${getHubApiKey()}`

@@ -18,7 +18,7 @@ export default function GlobalSettingsButton() {
   
   // Connection Mode overrides
   const [hubConnectionMode, setHubConnectionMode] = useState<"production" | "development">("production");
-  const [localIp, setLocalIp] = useState("127.0.0.1");
+  const [localIp, setLocalIp] = useState("192.168.1.10");
   const [customApiUrl, setCustomApiUrl] = useState("");
 
   // Decoupled provider state variables
@@ -80,22 +80,23 @@ export default function GlobalSettingsButton() {
           if (savedMode === "vps") savedMode = "production";
           if (savedMode === "local") savedMode = "development";
           
-          const savedIp = localStorage.getItem("STORYMEE_LOCAL_IP") || "127.0.0.1";
+          const defaultCoreUrl = process.env.NEXT_PUBLIC_CORE_API_URL || "https://dev-hub.storymee.com";
+          const savedIp = localStorage.getItem("STORYMEE_LOCAL_IP") || "192.168.1.10";
           setHubConnectionMode(savedMode as "production" | "development");
           setLocalIp(savedIp);
 
           const containsLocalhost = /localhost|127\.0\.0\.1|host\.docker\.internal/.test((settings.hubUrl || "").toLowerCase());
           const resolvedHubUrl = (savedMode === "development" || containsLocalhost)
             ? `http://${savedIp}:5100`
-            : (settings.hubUrl || "https://dev-hub.storymee.com");
+            : (settings.hubUrl || defaultCoreUrl);
 
           setHubUrl(resolvedHubUrl);
         } else {
-          setHubUrl(settings.hubUrl || "");
+          setHubUrl(settings.hubUrl || process.env.NEXT_PUBLIC_CORE_API_URL || "https://dev-hub.storymee.com");
         }
 
         const localStoredApiKey = typeof window !== "undefined" ? localStorage.getItem("STORYMEE_HUB_API_KEY") : "";
-        setHubApiKey(settings.hubApiKey || localStoredApiKey || "");
+        setHubApiKey(settings.hubApiKey || localStoredApiKey || process.env.NEXT_PUBLIC_HUB_API_KEY || "");
         setSdkUrl(settings.sdkUrl || "");
         setSdkApiKey(settings.sdkApiKey || "");
         setGeminiApiKey(settings.geminiApiKey || "");
@@ -142,7 +143,7 @@ export default function GlobalSettingsButton() {
         if (savedMode === "vps") savedMode = "production";
         if (savedMode === "local") savedMode = "development";
         
-        const savedIp = localStorage.getItem("STORYMEE_LOCAL_IP") || "storymee-pc.local";
+        const savedIp = localStorage.getItem("STORYMEE_LOCAL_IP") || "192.168.1.10";
         setHubConnectionMode(savedMode as "production" | "development");
         setLocalIp(savedIp);
       }
@@ -291,17 +292,17 @@ export default function GlobalSettingsButton() {
                 {hubConnectionMode === 'development' && (
                   <div className="space-y-1.5 pt-1 animate-in slide-in-from-top-1 duration-150">
                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
-                      Local storymee-pc Domain / IP Address
+                      Local Server / Ubuntu Domain / IP Address
                     </label>
                     <input
                       type="text"
                       value={localIp}
                       onChange={(e) => setLocalIp(e.target.value)}
-                      placeholder="storymee-pc.local"
+                      placeholder="192.168.1.10"
                       className="w-full bg-slate-950 border border-slate-850 focus:border-blue-500/50 rounded-xl px-3 py-1.5 text-xs text-slate-200 outline-none transition-all font-mono"
                     />
                     <span className="text-[9px] text-slate-500 block leading-tight">
-                      Nhập LAN IP address hoặc local mDNS domain của máy storymee-pc chạy backend.
+                      Nhập IP server chạy Hub Gateway (Mặc định Ubuntu LAN: 192.168.1.10).
                     </span>
                   </div>
                 )}

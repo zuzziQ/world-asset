@@ -63,7 +63,7 @@ export default function FallbackFlowGraph({ traces }: { traces: any[] }) {
 
   // Update edge animations based on the latest trace
   useEffect(() => {
-    if (traces && traces.length > 0) {
+    if (Array.isArray(traces) && traces.length > 0) {
       const latestTrace = traces[0]; // traces are ordered by newest first
       const tier = latestTrace.resolutionTier || (latestTrace.isGenTriggered ? 5 : 0);
       

@@ -12,7 +12,9 @@ import {
   generateCharacterVariant,
   generateText,
   resolvePrompt,
-  checkConsistency
+  checkConsistency,
+  getApiBaseUrl,
+  getHubApiKey
 } from "@/lib/api";
 import { monitorJob } from "../utils/monitorJob";
 import { 
@@ -1188,9 +1190,12 @@ Provide a concise physical prop description (material, shape, color, condition).
               console.warn("[Consistency Guardian] Violation detected:", violation);
               
               console.log("[Consistency Guardian] Refining prompt...");
-              const refineRes = await fetch("/worker/v1/media/agent/refine-prompt", {
+              const hubKey = getHubApiKey();
+              const refineHeaders: Record<string, string> = { "Content-Type": "application/json" };
+              if (hubKey) refineHeaders["Authorization"] = `Bearer ${hubKey}`;
+              const refineRes = await fetch(`${getApiBaseUrl()}/worker/v1/media/agent/refine-prompt`, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: refineHeaders,
                 body: JSON.stringify({ prompt, violation })
               });
               if (refineRes.ok) {
