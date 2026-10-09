@@ -107,12 +107,20 @@ export default function Home() {
     return null;
   }, [activeProject]);
 
-  // Reset selected character when project changes
+  // Automatically select an appropriate character when project or dbAssetsList changes
   useEffect(() => {
-    if (selectedProjectId) {
-      setSelectedCharacterName("Mica");
+    if (dbAssetsList && dbAssetsList.length > 0) {
+      const characters = dbAssetsList.filter(a => a.entityType === "character" || !a.entityType);
+      const exists = characters.some(c => c.name?.toLowerCase().trim() === selectedCharacterName?.toLowerCase().trim());
+      if (!exists) {
+        const charWithImg = characters.find(c => c.rootImageUrl);
+        const target = charWithImg || characters[0] || dbAssetsList[0];
+        if (target && target.name) {
+          setSelectedCharacterName(target.name);
+        }
+      }
     }
-  }, [selectedProjectId]);
+  }, [dbAssetsList, selectedProjectId, selectedCharacterName]);
 
   // Sync epScript when modal opens or edits
   useEffect(() => {

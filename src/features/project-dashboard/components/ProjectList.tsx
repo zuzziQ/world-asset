@@ -130,6 +130,34 @@ export default function ProjectList({
           </select>
           <ChevronDown className="w-3.5 h-3.5 text-neutral-500 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
         </div>
+
+        {/* Quick Showcase Selector Pills */}
+        <div className="flex items-center gap-1.5 flex-wrap pt-1">
+          <span className="text-[7.5px] font-black text-amber-400 uppercase tracking-widest">
+            ⭐ Showcase:
+          </span>
+          <button
+            type="button"
+            onClick={() => setSelectedProjectId("33333333-3333-3333-3333-333333333333")}
+            className={`text-[8px] px-2 py-0.5 rounded-md font-bold transition cursor-pointer border ${selectedProjectId === "33333333-3333-3333-3333-333333333333" ? "bg-purple-600 text-white border-purple-500 shadow-sm" : "bg-neutral-900/80 text-neutral-300 border-white/10 hover:border-purple-500/50"}`}
+          >
+            Thám tử Kilo
+          </button>
+          <button
+            type="button"
+            onClick={() => setSelectedProjectId("22222222-2222-2222-2222-222222222222")}
+            className={`text-[8px] px-2 py-0.5 rounded-md font-bold transition cursor-pointer border ${selectedProjectId === "22222222-2222-2222-2222-222222222222" ? "bg-purple-600 text-white border-purple-500 shadow-sm" : "bg-neutral-900/80 text-neutral-300 border-white/10 hover:border-purple-500/50"}`}
+          >
+            Paco
+          </button>
+          <button
+            type="button"
+            onClick={() => setSelectedProjectId("11111111-1111-1111-1111-111111111111")}
+            className={`text-[8px] px-2 py-0.5 rounded-md font-bold transition cursor-pointer border ${selectedProjectId === "11111111-1111-1111-1111-111111111111" ? "bg-purple-600 text-white border-purple-500 shadow-sm" : "bg-neutral-900/80 text-neutral-300 border-white/10 hover:border-purple-500/50"}`}
+          >
+            Mèo Mía
+          </button>
+        </div>
       </div>
 
       {/* 2. CHỌN TẬP PHIM DROPDOWN */}

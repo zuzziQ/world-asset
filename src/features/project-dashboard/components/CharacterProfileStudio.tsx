@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
-import { User, Loader2, Save, UploadCloud, Image as ImageIcon, Check, AlertTriangle, FileText } from "lucide-react";
+import { User, Loader2, Save, UploadCloud, Image as ImageIcon, Check, AlertTriangle, FileText, Sparkles } from "lucide-react";
+import { useProjectStore } from "@/lib/projectStore";
 import { 
   fetchCharacterVariants, updateCharacter, createCharacter, 
   uploadImage, syncProjectToLetta 
@@ -239,12 +240,23 @@ export default function CharacterProfileStudio({
               Nhân vật &ldquo;{characterName}&rdquo; đã có kịch bản World Bible nhưng chưa có DNA Asset thực tế trong cơ sở dữ liệu tài sản.
             </p>
           </div>
-          <button
-            onClick={handleCreateAsset}
-            className="flex items-center gap-1.5 bg-purple-600 hover:bg-purple-500 text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider transition active:scale-95 duration-200 cursor-pointer shadow shadow-purple-500/10"
-          >
-            Khởi Tạo DNA Asset
-          </button>
+          <div className="flex items-center gap-2 flex-wrap justify-center">
+            <button
+              onClick={handleCreateAsset}
+              className="flex items-center gap-1.5 bg-purple-600 hover:bg-purple-500 text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider transition active:scale-95 duration-200 cursor-pointer shadow shadow-purple-500/10"
+            >
+              Khởi Tạo DNA Asset
+            </button>
+            <button
+              onClick={() => {
+                useProjectStore.getState().fillDemoData();
+              }}
+              className="flex items-center gap-1.5 bg-gradient-to-r from-amber-500 via-pink-600 to-purple-600 hover:from-amber-400 hover:to-purple-500 text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider transition active:scale-95 duration-200 cursor-pointer shadow-lg shadow-amber-500/20"
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              Nạp Demo Portfolio
+            </button>
+          </div>
         </div>
       ) : (
         /* IF ASSET CREATED */
