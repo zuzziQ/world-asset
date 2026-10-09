@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { Clapperboard, ListOrdered, Layers, Loader2, X } from "lucide-react";
 import Link from "next/link";
+import { resolveImageUrl } from "@/lib/imageUrl";
 
 interface StoryboardTimelineProps {
   selectedProjectId: string;
@@ -114,9 +115,16 @@ export default function StoryboardTimeline({
                     <div className="aspect-video bg-neutral-950 border border-white/5 rounded-xl overflow-hidden relative flex items-center justify-center shadow-inner">
                       {shotAsset ? (
                         shotAsset.assetType === 'video' ? (
-                          <video src={shotAsset.driveUrl || shotAsset.url} className="w-full h-full object-cover" muted playsInline loop autoPlay />
+                          <video src={resolveImageUrl(shotAsset.driveUrl || shotAsset.url)} className="w-full h-full object-cover" muted playsInline loop autoPlay />
                         ) : (
-                          <img src={shotAsset.driveUrl || shotAsset.url} className="w-full h-full object-cover" alt={`Shot ${shot.shotNumber}`} />
+                          <img 
+                            src={resolveImageUrl(shotAsset.driveUrl || shotAsset.url)} 
+                            className="w-full h-full object-cover" 
+                            alt={`Shot ${shot.shotNumber}`} 
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600&auto=format&fit=crop&q=80";
+                            }}
+                          />
                         )
                       ) : (
                         <div className="text-[8px] text-neutral-600 font-bold uppercase tracking-wider italic text-center p-2">
@@ -166,15 +174,18 @@ export default function StoryboardTimeline({
             <div className="md:w-1/2 bg-black flex items-center justify-center border-r border-white/5 relative min-h-[300px]">
               {selectedShotDetail.asset?.assetType === 'video' ? (
                 <video 
-                  src={selectedShotDetail.asset?.driveUrl || selectedShotDetail.asset?.url} 
+                  src={resolveImageUrl(selectedShotDetail.asset?.driveUrl || selectedShotDetail.asset?.url)} 
                   className="w-full h-full object-contain" 
                   muted playsInline loop autoPlay 
                 />
               ) : (
                 <img 
-                  src={selectedShotDetail.asset?.driveUrl || selectedShotDetail.asset?.url} 
+                  src={resolveImageUrl(selectedShotDetail.asset?.driveUrl || selectedShotDetail.asset?.url)} 
                   className="w-full h-full object-contain" 
                   alt="Shot Render" 
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600&auto=format&fit=crop&q=80";
+                  }}
                 />
               )}
               <span className="absolute top-3 left-3 bg-purple-600/90 border border-purple-500/30 text-white font-mono text-[9px] font-black px-2 py-0.5 rounded-lg uppercase tracking-wider">

@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { User, MapPin, Box, Loader2, Award, Image as ImageIcon, X } from "lucide-react";
 import { fetchCharacterVariants, updateCharacter, syncProjectToLetta } from "@/lib/api";
+import { resolveImageUrl } from "@/lib/imageUrl";
 
 interface AssetGalleryProps {
   selectedProjectId: string;
@@ -165,7 +166,13 @@ export default function AssetGallery({
                   >
                     <div className="w-7 h-7 rounded-full overflow-hidden bg-neutral-950 flex items-center justify-center shrink-0 border border-white/5">
                       {asset.rootImageUrl ? (
-                        <img src={asset.rootImageUrl} className="w-full h-full object-cover" />
+                        <img 
+                          src={resolveImageUrl(asset.rootImageUrl, assetTab)} 
+                          className="w-full h-full object-cover" 
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600&auto=format&fit=crop&q=80";
+                          }}
+                        />
                       ) : (
                         assetTab === 'character' ? <User className="w-3.5 h-3.5 text-neutral-600" /> :
                         assetTab === 'location' ? <MapPin className="w-3.5 h-3.5 text-neutral-600" /> :
@@ -199,7 +206,13 @@ export default function AssetGallery({
                   <div className="mt-2 flex items-center gap-2 bg-neutral-950 border border-white/5 p-1.5 rounded-xl">
                     <div className="w-10 h-10 bg-black border border-white/5 rounded-lg overflow-hidden shrink-0">
                       {selectedAsset.rootImageUrl ? (
-                        <img src={selectedAsset.rootImageUrl} className="w-full h-full object-cover" />
+                        <img 
+                          src={resolveImageUrl(selectedAsset.rootImageUrl, assetTab)} 
+                          className="w-full h-full object-cover" 
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600&auto=format&fit=crop&q=80";
+                          }}
+                        />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-[7px] text-neutral-650 uppercase font-black">Ref Image</div>
                       )}
@@ -228,14 +241,23 @@ export default function AssetGallery({
                       <div className="w-full text-center py-8 text-[9px] text-neutral-600 italic shrink-0">Chưa có variant nào.</div>
                     ) : (
                       variants.map((v, index) => {
-                        const url = v.driveUrl || v.url;
-                        const isCurrentMaster = selectedAsset.rootImageUrl === url;
+                        const rawUrl = v.driveUrl || v.url;
+                        const resolvedUrl = resolveImageUrl(rawUrl);
+                        const isCurrentMaster = selectedAsset.rootImageUrl === rawUrl || selectedAsset.rootImageUrl === resolvedUrl;
                         return (
                           <div 
                             key={index} 
                             className="h-[105px] w-[105px] shrink-0 bg-neutral-950 border border-white/5 rounded-xl overflow-hidden relative group shadow-md cursor-pointer flex flex-col"
                           >
-                            <img src={url} className="w-full h-full object-cover" onClick={() => setLightboxUrl(url)} title="Click phóng to" />
+                            <img 
+                              src={resolvedUrl} 
+                              className="w-full h-full object-cover" 
+                              onClick={() => setLightboxUrl(resolvedUrl)} 
+                              title="Click phóng to" 
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600&auto=format&fit=crop&q=80";
+                              }}
+                            />
                             <div className="absolute inset-x-0 bottom-0 bg-black/85 p-1 flex justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                               {isCurrentMaster ? (
                                 <span className="text-[7px] text-emerald-400 font-black uppercase flex items-center gap-0.5">
@@ -243,7 +265,7 @@ export default function AssetGallery({
                                 </span>
                               ) : (
                                 <button
-                                  onClick={() => handleSetAsMaster(url)}
+                                  onClick={() => handleSetAsMaster(rawUrl)}
                                   disabled={isSettingMaster}
                                   className="bg-purple-600 text-white text-[7px] font-black uppercase px-1.5 py-0.5 rounded cursor-pointer transition hover:bg-purple-500"
                                 >
@@ -286,7 +308,13 @@ export default function AssetGallery({
                   >
                     <div className="w-9 h-9 rounded-full overflow-hidden bg-neutral-950 flex items-center justify-center shrink-0 border border-white/5">
                       {asset.rootImageUrl ? (
-                        <img src={asset.rootImageUrl} className="w-full h-full object-cover" />
+                        <img 
+                          src={resolveImageUrl(asset.rootImageUrl, assetTab)} 
+                          className="w-full h-full object-cover" 
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600&auto=format&fit=crop&q=80";
+                          }}
+                        />
                       ) : (
                         assetTab === 'character' ? <User className="w-4 h-4 text-neutral-600" /> :
                         assetTab === 'location' ? <MapPin className="w-4 h-4 text-neutral-600" /> :
@@ -323,15 +351,24 @@ export default function AssetGallery({
                 ) : (
                   <div className="grid grid-cols-3 gap-4 max-h-[380px] overflow-y-auto custom-scrollbar pr-1">
                     {variants.map((v, index) => {
-                      const url = v.driveUrl || v.url;
-                      const isCurrentMaster = selectedAsset?.rootImageUrl === url;
+                      const rawUrl = v.driveUrl || v.url;
+                      const resolvedUrl = resolveImageUrl(rawUrl);
+                      const isCurrentMaster = selectedAsset?.rootImageUrl === rawUrl || selectedAsset?.rootImageUrl === resolvedUrl;
                       
                       return (
                         <div 
                           key={index} 
                           className="aspect-square bg-neutral-950 border border-white/5 rounded-2xl overflow-hidden relative group shadow-lg cursor-pointer animate-in fade-in duration-200"
                         >
-                          <img src={url} className="w-full h-full object-cover" onClick={() => setLightboxUrl(url)} title="Click để phóng to" />
+                          <img 
+                            src={resolvedUrl} 
+                            className="w-full h-full object-cover" 
+                            onClick={() => setLightboxUrl(resolvedUrl)} 
+                            title="Click để phóng to" 
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600&auto=format&fit=crop&q=80";
+                            }}
+                          />
                           
                           {/* Overlay Controls */}
                           <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black via-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-200 p-3 pt-6 flex flex-col gap-2">
@@ -343,7 +380,7 @@ export default function AssetGallery({
                               </span>
                             ) : (
                               <button
-                                onClick={() => handleSetAsMaster(url)}
+                                onClick={() => handleSetAsMaster(rawUrl)}
                                 disabled={isSettingMaster}
                                 className="w-full py-1.5 bg-purple-600 hover:bg-purple-500 disabled:opacity-50 text-white rounded-lg text-[8.5px] font-black uppercase transition flex items-center justify-center gap-1 cursor-pointer"
                               >

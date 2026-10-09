@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { User, Loader2, Save, UploadCloud, Image as ImageIcon, Check, AlertTriangle, FileText, Sparkles } from "lucide-react";
 import { useProjectStore } from "@/lib/projectStore";
+import { resolveImageUrl } from "@/lib/imageUrl";
 import { 
   fetchCharacterVariants, updateCharacter, createCharacter, 
   uploadImage, syncProjectToLetta 
@@ -120,9 +121,20 @@ export default function CharacterProfileStudio({
     setIsLoadingVariants(true);
     try {
       const data = await fetchCharacterVariants(assetId);
-      setVariants(data || []);
+      if (data && data.length > 0) {
+        setVariants(data);
+      } else if (dbAsset?.rootImageUrl) {
+        setVariants([{ driveUrl: dbAsset.rootImageUrl, url: dbAsset.rootImageUrl }]);
+      } else {
+        setVariants([]);
+      }
     } catch (e) {
       console.error("Failed to load variants:", e);
+      if (dbAsset?.rootImageUrl) {
+        setVariants([{ driveUrl: dbAsset.rootImageUrl, url: dbAsset.rootImageUrl }]);
+      } else {
+        setVariants([]);
+      }
     } finally {
       setIsLoadingVariants(false);
     }
@@ -267,7 +279,13 @@ export default function CharacterProfileStudio({
             <div className="w-[100px] shrink-0 flex flex-col justify-between items-center gap-2">
               <div className="w-full aspect-square bg-neutral-955 border border-white/5 rounded-xl overflow-hidden flex items-center justify-center relative group shadow-inner">
                 {assetImgUrl ? (
-                  <img src={assetImgUrl} className="w-full h-full object-cover" />
+                  <img 
+                    src={resolveImageUrl(assetImgUrl)} 
+                    className="w-full h-full object-cover" 
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                    }}
+                  />
                 ) : (
                   <div className="text-[20px]">👤</div>
                 )}
@@ -393,18 +411,25 @@ export default function CharacterProfileStudio({
               ) : (
                 <div className="grid grid-cols-3 gap-3 pb-3">
                   {variants.map((v, index) => {
-                    const url = v.driveUrl || v.url;
-                    const isCurrentMaster = dbAsset.rootImageUrl === url;
+                    const rawUrl = v.driveUrl || v.url;
+                    const resolvedUrl = resolveImageUrl(rawUrl);
+                    const isCurrentMaster = dbAsset.rootImageUrl === rawUrl || dbAsset.rootImageUrl === resolvedUrl;
                     return (
                       <div 
                         key={index} 
-                        onClick={() => onLightboxOpen(url)}
+                        onClick={() => onLightboxOpen(resolvedUrl)}
                         className={`aspect-square bg-neutral-950 border rounded-xl overflow-hidden relative group shadow-md cursor-pointer hover:border-purple-500/50 transition-all ${
                           isCurrentMaster ? "border-emerald-500/80 ring-2 ring-emerald-500/25" : "border-white/5"
                         }`}
                         title="Click để phóng to xem chi tiết"
                       >
-                        <img src={url} className="w-full h-full object-cover animate-in fade-in hover:scale-105 transition duration-300" />
+                        <img 
+                          src={resolvedUrl} 
+                          className="w-full h-full object-cover animate-in fade-in hover:scale-105 transition duration-300"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=600&auto=format&fit=crop&q=80";
+                          }} 
+                        />
                         {isCurrentMaster && (
                           <div className="absolute top-1.5 right-1.5 bg-emerald-500/90 text-white rounded-full p-0.5 shadow">
                             <Check className="w-3 h-3" />

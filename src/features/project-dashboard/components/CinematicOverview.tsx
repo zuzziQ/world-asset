@@ -3,6 +3,7 @@
 import React, { useMemo } from "react";
 import { Film, Users, MapPin, Gift, Bookmark } from "lucide-react";
 import { WorldBible } from "@/features/world-bible/schema";
+import { resolveImageUrl, FALLBACK_IMAGES } from "@/lib/imageUrl";
 
 interface CinematicOverviewProps {
   bible: WorldBible | null;
@@ -173,11 +174,14 @@ export default function CinematicOverview({
               >
                 <div className="space-y-2.5">
                   <div className="w-full aspect-square rounded-xl overflow-hidden bg-neutral-955 border border-white/5 relative flex items-center justify-center shadow-inner">
-                    {char.imageUrl ? (
-                      <img src={char.imageUrl} className="w-full h-full object-cover group-hover:scale-105 transition duration-300" alt={char.name} />
-                    ) : (
-                      <div className="text-[28px] select-none text-neutral-700">👤</div>
-                    )}
+                    <img 
+                      src={char.imageUrl ? resolveImageUrl(char.imageUrl) : FALLBACK_IMAGES.character} 
+                      className="w-full h-full object-cover group-hover:scale-105 transition duration-300" 
+                      alt={char.name}
+                      onError={(e) => {
+                        (e.currentTarget as HTMLImageElement).src = FALLBACK_IMAGES.character;
+                      }}
+                    />
                     {!char.isCreated && (
                       <span className="absolute top-1.5 right-1.5 bg-amber-500/10 border border-amber-500/20 text-amber-400 font-mono text-[6px] px-1 rounded-sm uppercase tracking-wider">
                         Draft
@@ -227,11 +231,14 @@ export default function CinematicOverview({
               >
                 <div className="space-y-2.5">
                   <div className="w-full aspect-square rounded-xl bg-neutral-955 border border-white/5 overflow-hidden flex items-center justify-center shrink-0 shadow-inner">
-                    {loc.rootImageUrl ? (
-                      <img src={loc.rootImageUrl} className="w-full h-full object-cover group-hover:scale-105 transition duration-350" alt={loc.name} />
-                    ) : (
-                      <MapPin className="w-7 h-7 text-neutral-750" />
-                    )}
+                    <img 
+                      src={loc.rootImageUrl ? resolveImageUrl(loc.rootImageUrl) : FALLBACK_IMAGES.location} 
+                      className="w-full h-full object-cover group-hover:scale-105 transition duration-350" 
+                      alt={loc.name}
+                      onError={(e) => {
+                        (e.currentTarget as HTMLImageElement).src = FALLBACK_IMAGES.location;
+                      }}
+                    />
                   </div>
                   <div className="space-y-0.5">
                     <span className="text-[10.5px] font-black text-white truncate block">{loc.name}</span>
@@ -275,11 +282,14 @@ export default function CinematicOverview({
               >
                 <div className="space-y-2.5">
                   <div className="w-full aspect-square rounded-xl bg-neutral-955 border border-white/5 overflow-hidden flex items-center justify-center shrink-0 shadow-inner">
-                    {prop.rootImageUrl ? (
-                      <img src={prop.rootImageUrl} className="w-full h-full object-cover group-hover:scale-105 transition duration-350" alt={prop.name} />
-                    ) : (
-                      <Gift className="w-7 h-7 text-neutral-750" />
-                    )}
+                    <img 
+                      src={prop.rootImageUrl ? resolveImageUrl(prop.rootImageUrl) : FALLBACK_IMAGES.prop} 
+                      className="w-full h-full object-cover group-hover:scale-105 transition duration-350" 
+                      alt={prop.name}
+                      onError={(e) => {
+                        (e.currentTarget as HTMLImageElement).src = FALLBACK_IMAGES.prop;
+                      }}
+                    />
                   </div>
                   <div className="space-y-0.5">
                     <span className="text-[10.5px] font-black text-white truncate block">{prop.name}</span>
